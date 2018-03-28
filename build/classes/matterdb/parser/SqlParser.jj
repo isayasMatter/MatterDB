@@ -1,0 +1,345 @@
+options{
+	STATIC = false;
+	IGNORE_CASE = true;
+}
+
+PARSER_BEGIN(SqlParser)
+
+	package matterdb.parser;
+
+	import java.io.PrintStream;
+	import java.util.*;
+	import matterdb.*;
+
+	public class SqlParser{
+		// public static void main(String[] args) throws ParseException, TokenMgrError {
+		// 	SqlParser parser = new SqlParser(System.in);
+		// 	try{
+		// 		parser.Start(System.out);
+		// 	} catch(ParseException ex){
+		// 		System.out.println("!Error! Your SQL commands have syntax errors. Please check and try again. \n" + ex.getMessage());
+		// 	}
+		// }
+		//String line = "";
+		//HashMap<String, Column> columns = new HashMap<String, Column>();
+	}
+
+
+PARSER_END(SqlParser)
+
+	SPECIAL_TOKEN : {< SINGLE_LINE_COMMENT: "--"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? > } 
+        SKIP: {" "|"\n"|"\r"|"\r\n"|"\t"}
+	/* TOKEN: {<EOL: "\n"|"\r"|"\r\n">} */
+      
+	TOKEN : {< SELECT: "SELECT" > | < FROM : "FROM" > | < WHERE : "WHERE" > | < AND : "AND" > | <CREATE: "CREATE"> | <DATABASE: "DATABASE"> | <DROP: "DROP"> | <USE: "USE"> | <TABLE: "TABLE"> | <ALTER: "ALTER"> | <ADD: "ADD"> | <EXIT: ".EXIT"> | <INSERT: "INSERT"> | <INTO: "INTO"> | <VALUES: "VALUES"> | <UPDATE: "UPDATE"> | <SET: "SET"> | <DELETE: "DELETE">} 
+	TOKEN: {<INT: "int"> | <FLOAT: "float"> | <CHAR: "char"> | <VARCHAR: "varchar"> }
+	
+        TOKEN : {<SEMICOLON: ";"> | <QUOTE: "'"> | <DOT: "."> | <COMMA: ","> | <OPENBRACKET: "("> | <CLOSEBRACKET: ")"> | <ASTERISK: "*">}
+        TOKEN : {< NAME : ([ "a"-"z", "0"-"9", "_", "." ])+ >}
+        TOKEN : {<CONDITIONS:"=" | ">" | "<" | ">=" | "<=" | "!=" >}  
+
+	
+	Command Start(PrintStream printStream):
+	{		
+		Command cmd = new Command();		
+	}
+	{
+		(
+			cmd = Query() <SEMICOLON> {return cmd;} 
+			| 
+			<EXIT>cmd = ExitQuery()			
+		)
+			
+		{return cmd;}
+	}
+
+
+
+	Command Query():
+	{
+		
+		Command cmd = new Command();
+	}
+	{
+		(
+		LOOKAHEAD(2)
+		<CREATE><DATABASE>cmd = CreateDbQuery()
+		|
+		<CREATE><TABLE>cmd = CreateTableQuery()
+		|
+		LOOKAHEAD(2)
+		<DROP><DATABASE>cmd = DropDbQuery()
+		|
+		<DROP><TABLE>cmd = DropTableQuery()
+		|
+		<USE>cmd = UseDbQuery() 
+		|
+		<ALTER><TABLE>cmd = AlterTableQuery()
+		|
+		<SELECT>cmd = SelectQuery()                
+                |
+                <UPDATE>cmd=UpdateQuery()
+                |
+                <DELETE>cmd=DeleteQuery()
+                |
+                <INSERT>cmd=InsertQuery()
+		)
+		{
+			return cmd;
+		}		
+	}
+
+	Command CreateDbQuery():
+	{
+		String dbName;
+		Token t;
+		Command newCmd = new Command("CREATE_DATABASE");
+	}
+	{
+		t = <NAME>
+		{
+			dbName = t.image;
+			newCmd.setObjectName(dbName);
+			return newCmd;
+		}
+	} 
+
+	Command DropDbQuery():
+	{
+		String dbName;
+		Token t;
+		Command newCmd = new Command("DROP_DATABASE");
+	}
+	{
+		t = <NAME>
+		{
+			dbName = t.image;
+			newCmd.setObjectName(dbName);
+			return newCmd;
+		}
+	} 
+
+	Command DropTableQuery():
+	{
+		String tableName;
+		Token t;
+		Command newCmd = new Command("DROP_TABLE");
+	}
+	{
+		t = <NAME>
+		{
+			tableName = t.image;
+			newCmd.setObjectName(tableName);
+			return newCmd;
+		}
+	} 
+
+	Command UseDbQuery() :
+	{
+		String dbName;
+		Token t;
+		Command newCmd = new Command("USE_DATABASE");
+	}
+	{
+		t = <NAME>
+		{
+			dbName = t.image;
+			newCmd.setObjectName(dbName);
+			return newCmd;
+		}
+	}
+
+	Command CreateTableQuery():
+	{
+		String tableName;
+		Token t;
+		List cols = new ArrayList();
+		Command newCmd = new Command("CREATE_TABLE");
+	}
+	{
+		t = <NAME> cols = TableFieldsQuery()
+		{
+			tableName = t.image;
+			newCmd.setObjectName(tableName);
+			newCmd.setColumnList(cols);
+			return newCmd;
+		}
+	} 
+
+	Command AlterTableQuery() :	
+	{
+		String tableName;
+		Token t;
+		Column col;
+		Command newCmd = new Command("ALTER_TABLE");
+		List colList = new ArrayList();
+	}
+	{
+		t = <NAME><ADD> col = TableFieldDefinition()
+		{
+			tableName = t.image;
+			newCmd.setObjectName(tableName);
+			colList.add(col);
+			newCmd.setColumnList(colList);
+			return	newCmd;
+		}
+	}
+
+	Command SelectQuery() :
+	{
+		String tableName;
+		Token t;
+		Command newCmd = new Command("SELECT");
+	}
+	{
+		<ASTERISK><FROM> t=<NAME>
+		{
+			tableName = t.image;
+			newCmd.setObjectName(tableName);
+			return newCmd;
+		}
+	}
+
+	List TableFieldsQuery():
+	{
+		List columns = new ArrayList();
+		Column col;
+	}
+	{
+		<OPENBRACKET> 
+			col = TableFieldDefinition() {columns.add(col);}
+			(<COMMA> col = TableFieldDefinition() {columns.add(col);})* 
+		<CLOSEBRACKET>
+		
+		{
+			return columns;
+		}
+	}
+
+
+	Column TableFieldDefinition():
+	{
+		Token cName;
+		Token cType;
+		int cSize = 0;
+	}
+	{
+		 (			
+			cName=<NAME> 
+				(
+					cType =<INT> | 
+					cType=<FLOAT> | 
+					cType=<CHAR> cSize=CheckSize() | 
+					cType=<VARCHAR> cSize=CheckSize()
+					)
+			) 	
+		{	
+			Column newColumn = new Column(cType.image, cName.image, cSize);
+			return newColumn;
+			}
+	}
+
+
+	int CheckSize():
+	{
+		Token t;
+	}
+	{
+		"("(t = <NAME>)")"
+		{return Integer.parseInt(t.image);} 
+	}
+
+	Command ExitQuery():
+	{
+		Command newCmd = new Command("EXIT");
+	}
+	{
+		{return newCmd;}
+	}
+
+        Command InsertQuery () :
+        {
+            String strTableName;;
+            Command cmd = new Command("INSERT");;
+            Token tableName;
+            Token value;
+            List values = new ArrayList();
+        }
+        {
+            <INTO> tableName=<NAME> <VALUES> 
+            <OPENBRACKET>
+                (<QUOTE>)* value = <NAME> (<QUOTE>)* {values.add(value.image);}
+                (<COMMA>
+                    (<QUOTE>)* value = <NAME> (<QUOTE>)* {values.add(value.image);}
+                )*
+            <CLOSEBRACKET>
+            {
+                strTableName = tableName.image;
+                cmd.setObjectName(strTableName);
+                cmd.setValueList(values);
+                return cmd;
+            }
+        }
+
+        Command UpdateQuery():
+        {
+            Command cmd = new Command("UPDATE");
+
+            String strTableName;
+            String columnToUpdate;
+            String strColumnValue;
+            Condition cnd = new Condition();
+            
+            
+            Token tableName;
+            Token updatedColumnName;
+            Token conditionColumnName;
+            Token condition;
+            Token conditionValue;
+            Token columnValue;
+        }
+        {
+            tableName = <NAME> <SET> updatedColumnName = <NAME> <CONDITIONS> (<QUOTE>)* columnValue = <NAME> (<QUOTE>)* <WHERE> conditionColumnName = <NAME> condition = <CONDITIONS> (<QUOTE>)* conditionValue = <NAME> (<QUOTE>)*
+            
+            {
+			strTableName = tableName.image;
+                        columnToUpdate = updatedColumnName.image;
+                        strColumnValue = columnValue.image;
+                        cnd.columnName = conditionColumnName.image;
+                        cnd.conditionType = condition.image;
+                        cnd.conditionValue = conditionValue.image;
+
+			cmd.setObjectName(strTableName);
+                        cmd.setCondition(cnd);
+                        cmd.setUpdateColumnName(columnToUpdate);
+                        cmd.setUpdateColumnValue(strColumnValue);
+			return cmd;
+            }
+        }
+           
+        Command DeleteQuery():
+        {
+            Command cmd = new Command("DELETE");
+
+            String strTableName;
+            Condition cnd = new Condition();
+            
+            Token tableName;
+            Token conditionColumnName;
+            Token condition;
+            Token conditionValue; 
+        }
+        {
+            <FROM> tableName = <NAME> <WHERE> conditionColumnName = <NAME> condition = <CONDITIONS> (<QUOTE>)* conditionValue = <NAME> (<QUOTE>)*
+                
+            {
+			strTableName = tableName.image;                
+                        cnd.columnName = conditionColumnName.image;
+                        cnd.conditionType = condition.image;
+                        cnd.conditionValue = conditionValue.image;
+
+			cmd.setObjectName(strTableName);
+                        cmd.setCondition(cnd);                        
+			return cmd;
+            }
+        }
