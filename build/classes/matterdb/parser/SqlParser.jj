@@ -34,8 +34,8 @@ PARSER_END(SqlParser)
 	TOKEN : {< SELECT: "SELECT" > | < FROM : "FROM" > | < WHERE : "WHERE" > | < AND : "AND" > | <CREATE: "CREATE"> | <DATABASE: "DATABASE"> | <DROP: "DROP"> | <USE: "USE"> | <TABLE: "TABLE"> | <ALTER: "ALTER"> | <ADD: "ADD"> | <EXIT: ".EXIT"> | <INSERT: "INSERT"> | <INTO: "INTO"> | <VALUES: "VALUES"> | <UPDATE: "UPDATE"> | <SET: "SET"> | <DELETE: "DELETE">} 
 	TOKEN: {<INT: "int"> | <FLOAT: "float"> | <CHAR: "char"> | <VARCHAR: "varchar"> }
 	
-        TOKEN : {<SEMICOLON: ";"> | <QUOTE: "'"> | <DOT: "."> | <COMMA: ","> | <OPENBRACKET: "("> | <CLOSEBRACKET: ")"> | <ASTERISK: "*">}
-        TOKEN : {< NAME : ([ "a"-"z", "0"-"9", "_", "." ])+ >}
+        TOKEN : {<SEMICOLON: ";"> | <QUOTE: "'"|"\""> | <DOT: "."> | <COMMA: ","> | <OPENBRACKET: "("> | <CLOSEBRACKET: ")"> }
+        TOKEN : {< NAME : ([ "a"-"z", "0"-"9", "_", ".", "*" ])+ >}
         TOKEN : {<CONDITIONS:"=" | ">" | "<" | ">=" | "<=" | "!=" >}  
 
 	
@@ -189,13 +189,18 @@ PARSER_END(SqlParser)
 	{
 		String tableName;
 		Token t;
+                Token columnToken;
 		Command newCmd = new Command("SELECT");
+                List columns = new ArrayList();
 	}
 	{
-		<ASTERISK><FROM> t=<NAME>
+		columnToken = <NAME> {columns.add(columnToken.image);}
+                (<COMMA> columnToken = <NAME> {columns.add(columnToken.image);})*
+                <FROM> t=<NAME>
 		{
 			tableName = t.image;
 			newCmd.setObjectName(tableName);
+                        newCmd.setSelectedColumns(columns);
 			return newCmd;
 		}
 	}

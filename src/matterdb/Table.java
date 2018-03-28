@@ -42,10 +42,17 @@ public class Table implements Serializable{
         return true;
     }
     
-    public String getColumns(){
+    public String getColumns(List<String> selectedColumns){
         Column column;
         String allColumns = "";
-        Set<String> columnNames = this.columns.keySet();
+        List<String> columnNames = new ArrayList<String>();
+        
+        if (!selectedColumns.contains("*")){
+            columnNames = selectedColumns;
+        } else {
+            columnNames.addAll(this.columns.keySet());
+        }        
+        
         for(String col:columnNames){
                column =(Column) columns.get(col);
                allColumns += column + " | ";
@@ -78,11 +85,18 @@ public class Table implements Serializable{
         return true;
     }
     
-    public void printTuples(){
-        Set<Integer> cols = this.tuples.keySet();
+    public void printTuples(List selectedColumns, Condition condition){
         
-        for(Integer col:cols){
-            System.out.println(this.tuples.get(col).printTuple());
+        Set<Integer> tups;
+        
+        if(condition==null){
+            tups = this.tuples.keySet();
+        }else{
+            tups = findTuples(condition);
+        }
+        
+        for(Integer tup:tups){
+            System.out.println(this.tuples.get(tup).printTuple(selectedColumns));
         }
     }
     

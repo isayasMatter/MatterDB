@@ -121,7 +121,7 @@ public class Engine implements Serializable{
      * @param cmd 
      */
     public void selectTable(Command cmd){
-        currentDb.selectTable(cmd.getObjectName());
+        currentDb.selectTable(cmd.getObjectName(), cmd.getSelectedColumns(), cmd.getCondition());
     }
     
     public void insertIntoTable(Command cmd){

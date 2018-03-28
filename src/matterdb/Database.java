@@ -59,12 +59,12 @@ public class Database implements Serializable{
         }
     }
     
-    public void selectTable(String name){
+    public void selectTable(String name, List selectedColumns, Condition condition){
         Table table;
         if(tableExists(name)){
             table = (Table) this.tables.get(name);
-            System.out.println(table.getColumns());
-            table.printTuples();
+            System.out.println(table.getColumns(selectedColumns));
+            table.printTuples(selectedColumns, condition);
         }else{
             System.out.println("!Failed to query table " + name + " because it does not exist");
         }

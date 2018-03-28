@@ -69,11 +69,9 @@ public interface SqlParserConstants {
   /** RegularExpression Id. */
   int CLOSEBRACKET = 34;
   /** RegularExpression Id. */
-  int ASTERISK = 35;
+  int NAME = 35;
   /** RegularExpression Id. */
-  int NAME = 36;
-  /** RegularExpression Id. */
-  int CONDITIONS = 37;
+  int CONDITIONS = 36;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -115,7 +113,6 @@ public interface SqlParserConstants {
     "\",\"",
     "\"(\"",
     "\")\"",
-    "\"*\"",
     "<NAME>",
     "<CONDITIONS>",
   };

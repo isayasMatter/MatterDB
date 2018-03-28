@@ -27,14 +27,22 @@ public class Tuple implements Serializable{
         this.cells.put(columnName,newCell);
     }
 
-    public String printTuple(){
+    public String printTuple(List<String> selectedColumns){
         String tupleString = "";
         
-        Set<String> columnNames = this.cells.keySet();
+        List<String> columnNames = new ArrayList<String>();
+        
+        if (!selectedColumns.contains("*")){
+            columnNames = selectedColumns;
+        } else {
+            columnNames.addAll(this.cells.keySet());
+        }   
         
         for(String columnName:columnNames){
             tupleString += (this.cells.get(columnName) + "|");
         }
+        
+        tupleString = tupleString.substring(0,tupleString.length()-2);
         return tupleString;
     }    
 }

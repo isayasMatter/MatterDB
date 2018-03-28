@@ -19,6 +19,7 @@ public class Command {
     private String updateColumnName;
     private String updateColumnValue;
     private List valueList;
+    private List selectedColumns;
     
     /**
      * Constructor
@@ -28,6 +29,7 @@ public class Command {
         this.objectName = null;
         this.columnList = null;
         this.condition = null;
+        selectedColumns = null;
     }
     
     /**
@@ -139,6 +141,15 @@ public class Command {
     public void setValueList(List valueList) {
         this.valueList = valueList;
     }
+
+    public List getSelectedColumns() {
+        return selectedColumns;
+    }
+
+    public void setSelectedColumns(List selectedColumns) {
+        this.selectedColumns = selectedColumns;
+    }
+    
     
     @Override
     public String toString() {
