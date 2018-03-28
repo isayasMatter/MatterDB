@@ -5,20 +5,30 @@ import java.io.Serializable;
 /**
  * University of Nevada Reno
  * Department of Computer Science and Engineering
- * CS657 Programming Assignment 1
+ * CS657 Programming Assignment
  * Spring 2018
  * @author Isayas Adhanom
- * @version 1.0 02/22/2018
+ * @version 1.1 03/27/2018
  */
 public class Database implements Serializable{
     private String name;
     private HashMap<String, Table> tables;
     
+    /**
+     * Constructor
+     * @param name 
+     */
     public Database(String name){
         this.name = name;
         tables = new HashMap();
     }
     
+    /**
+     * Creates a table in the current database.
+     * @param name name of the table.
+     * @param columns definitions of the columns.
+     * @return 
+     */
     public boolean createTable(String name, List<Column> columns){
         
         if (!tableExists(name)){
@@ -36,6 +46,12 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Alters the structure of a table in the current database.
+     * @param name of the table.
+     * @param columns definition of the columns.
+     * @return 
+     */
     public boolean alterTable(String name, List<Column> columns){
         Column column = columns.get(0);
         if (tableExists(name)){
@@ -48,6 +64,11 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Drops a table from a database.
+     * @param name
+     * @return 
+     */
     public boolean dropTable(String name){
         if (tableExists(name)) {
             this.tables.remove(name);
@@ -59,6 +80,12 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Prints the data and structure of a table.
+     * @param name
+     * @param selectedColumns
+     * @param condition 
+     */
     public void selectTable(String name, List selectedColumns, Condition condition){
         Table table;
         if(tableExists(name)){
@@ -70,6 +97,11 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Inserts a tuple into a table.
+     * @param name
+     * @param values 
+     */
     public void insertIntoTable(String name, String[] values){
         Table table;
         if(tableExists(name)){
@@ -80,10 +112,20 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Checks whether a table exists.
+     * @param name
+     * @return 
+     */
     public boolean tableExists(String name){
         return (this.tables.get(name) != null);
     }
     
+    /**
+     * Deletes a tuple from a table.
+     * @param name
+     * @param condition 
+     */
     public void deleteFromTable(String name, Condition condition){
         Table table;
         if(tableExists(name)){
@@ -94,6 +136,10 @@ public class Database implements Serializable{
         }
     }
     
+    /**
+     * Updates the values a table.
+     * @param cmd 
+     */
     public void updateTable(Command cmd){
         String tableName = cmd.getObjectName();
         Table table;

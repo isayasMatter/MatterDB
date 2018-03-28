@@ -1,3 +1,12 @@
+/**
+ * University of Nevada Reno
+ * Department of Computer Science and Engineering
+ * CS657 Programming Assignment
+ * Spring 2018
+ * @author Isayas Adhanom
+ * @version 1.0 03/27/2018
+ */
+
 options{
 	STATIC = false;
 	IGNORE_CASE = true;
@@ -39,18 +48,17 @@ PARSER_END(SqlParser)
         TOKEN : {<CONDITIONS:"=" | ">" | "<" | ">=" | "<=" | "!=" >}  
 
 	
-	Command Start(PrintStream printStream):
+	boolean Start(PrintStream printStream, Engine currentEngine):
 	{		
 		Command cmd = new Command();		
 	}
 	{
 		(
-			cmd = Query() <SEMICOLON> {return cmd;} 
+			cmd = Query() <SEMICOLON> {currentEngine.commandProcessor(cmd);} 
 			| 
-			<EXIT>cmd = ExitQuery()			
-		)
-			
-		{return cmd;}
+			<EXIT>cmd = ExitQuery() {return false;}			
+		)*
+                {return false;}
 	}
 
 
@@ -188,19 +196,35 @@ PARSER_END(SqlParser)
 	Command SelectQuery() :
 	{
 		String tableName;
+
 		Token t;
                 Token columnToken;
+                Token conditionColumnName;
+                Token condition;
+                Token conditionValue;
+                Condition cnd = new Condition();
+
 		Command newCmd = new Command("SELECT");
                 List columns = new ArrayList();
+                
 	}
 	{
 		columnToken = <NAME> {columns.add(columnToken.image);}
                 (<COMMA> columnToken = <NAME> {columns.add(columnToken.image);})*
-                <FROM> t=<NAME>
+                <FROM> t=<NAME> 
+                (<WHERE> conditionColumnName = <NAME> condition = <CONDITIONS> (<QUOTE>)* conditionValue = <NAME> (<QUOTE>)* 
+                {
+                        cnd.columnName = conditionColumnName.image;
+                        cnd.conditionType = condition.image;
+                        cnd.conditionValue = conditionValue.image;
+                        newCmd.setCondition(cnd);
+                }
+                )*
 		{
 			tableName = t.image;
 			newCmd.setObjectName(tableName);
                         newCmd.setSelectedColumns(columns);
+                        
 			return newCmd;
 		}
 	}

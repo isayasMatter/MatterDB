@@ -5,10 +5,10 @@ import java.io.*;
 /**
  * University of Nevada Reno
  * Department of Computer Science and Engineering
- * CS657 Programming Assignment 1
+ * CS657 Programming Assignment
  * Spring 2018
  * @author Isayas Adhanom
- * @version 1.0 02/22/2018
+ * @version 1.0 03/27/2018
  */
 public class Engine implements Serializable{
     private Database currentDb;
@@ -41,8 +41,8 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
-     * @param name
+     * Selects the current database to work on.
+     * @param name of the database to use.
      * @return 
      */
     public boolean useDb(String name){
@@ -58,8 +58,8 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
-     * @param name
+     * Deletes a database from the engine.
+     * @param name of the database to delete.
      * @return 
      */
     public boolean dropDb(String name){
@@ -75,7 +75,7 @@ public class Engine implements Serializable{
     }    
     
     /**
-     * 
+     * Shows a list of all databases.
      * @return 
      */
     public boolean showDbs(){
@@ -91,8 +91,8 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
-     * @param cmd 
+     * Creates a database on the current database.
+     * @param cmd the command object returned from the parser.
      */
     public void createTable(Command cmd){
         currentDb.createTable(cmd.getObjectName(), cmd.getColumnList());  
@@ -100,8 +100,8 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
-     * @param tableName 
+     * Drop a table from the current database.
+     * @param tableName the name of the table to drop.
      */
     public void dropTable(String tableName){
         currentDb.dropTable(tableName);
@@ -109,21 +109,25 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
-     * @param cmd 
+     * Alters the structure of a table in the current database.
+     * @param cmd the command object returned from the parser.
      */
     public void alterTable(Command cmd){
         currentDb.alterTable(cmd.getObjectName(), cmd.getColumnList());
     }
     
     /**
-     * 
-     * @param cmd 
+     * Displays data and structure of a table in the current database.
+     * @param cmd the command object returned from the parser.
      */
     public void selectTable(Command cmd){
         currentDb.selectTable(cmd.getObjectName(), cmd.getSelectedColumns(), cmd.getCondition());
     }
     
+    /**
+     * Inserts a tuple into a table in the current database.
+     * @param cmd the command object returned from the parser.
+     */
     public void insertIntoTable(Command cmd){
         List<String> cellValues = cmd.getValueList();
         String[] values = new String[cellValues.size()];
@@ -133,19 +137,27 @@ public class Engine implements Serializable{
         saveDatabases();
     }
     
+    /**
+     * Deletes a tuple from a table in the current database.
+     * @param cmd the command object returned from the parser.
+     */
     public void deleteFromTable(Command cmd){
         currentDb.deleteFromTable(cmd.getObjectName(), cmd.getCondition());
         saveDatabases();
     }
     
+    /**
+     * Updates the value of a column(s) in a table in the current database.
+     * @param cmd the command object returned from the parser.
+     */
     public void updateTable(Command cmd){
         currentDb.updateTable(cmd);
         saveDatabases();
     }
     
     /**
-     * 
-     * @param cmd
+     * Processes the command from the parser and selects a specific method based on the command.
+     * @param cmd the command object returned from the parser.
      * @return 
      */
     public boolean commandProcessor(Command cmd){
@@ -223,7 +235,7 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
+     * Starts the database engine by loading or creating the main databases file.
      * @return 
      */
     public boolean start(){        
@@ -263,7 +275,7 @@ public class Engine implements Serializable{
     }
     
     /**
-     * 
+     * Saves the databases and closes.
      * @return 
      */
     public boolean close(){ 
@@ -273,7 +285,7 @@ public class Engine implements Serializable{
         return true;
     }
     /**
-     * 
+     * Saves all the values of the databases into the databases file.
      * @return 
      */
     private boolean saveDatabases(){

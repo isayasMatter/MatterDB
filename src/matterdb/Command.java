@@ -1,15 +1,13 @@
-/*
- * This file was prepared as part of the CS657 HW1 assignment  at University of Nevada, Reno by Isayas Adhanom.
- * Use it at your own risk.
- * Spring 2018.
- */
 package matterdb;
 import java.util.List;
 
 /**
- * CS657 Programming Assignment 1
+ * University of Nevada Reno
+ * Department of Computer Science and Engineering
+ * CS657 Programming Assignment
  * Spring 2018
  * @author Isayas Adhanom
+ * @version 1.0 03/27/2018
  */
 public class Command {    
     private String commandType;
@@ -47,7 +45,7 @@ public class Command {
      */
     public Command(String commandType, String objectName){
         this.commandType = commandType;
-        this.objectName = objectName;
+        this.objectName = objectName.toLowerCase();
     }
     
     /**
@@ -58,7 +56,7 @@ public class Command {
      */
     public Command(String commandType, String objectName, List columnList){
         this.commandType = commandType;
-        this.objectName = objectName;
+        this.objectName = objectName.toLowerCase();
         this.columnList = columnList;
     }   
     
@@ -83,7 +81,7 @@ public class Command {
      * @return the name of the object we want to manipulate.
      */
     public String getObjectName() {
-        return objectName;
+        return objectName.toLowerCase();
     }
     
     /**
@@ -91,7 +89,7 @@ public class Command {
      * @param objectName the name of the object we want to manipulate.
      */
     public void setObjectName(String objectName) {
-        this.objectName = objectName;
+        this.objectName = objectName.toLowerCase();
     }
     
     /**
@@ -109,43 +107,83 @@ public class Command {
     public void setColumnList(List columnList) {
         this.columnList = columnList;
     }   
-
+    
+    /**
+     * 
+     * @return 
+     */
     public Condition getCondition() {
         return condition;
     }
-
+    
+    /**
+     * 
+     * @param condition 
+     */
     public void setCondition(Condition condition) {
         this.condition = condition;
     }    
-
+    
+    /**
+     * 
+     * @return 
+     */
     public String getUpdateColumnName() {
-        return updateColumnName;
+        return updateColumnName.toLowerCase();
     }
 
+    /**
+     * 
+     * @param updateColumnName 
+     */
     public void setUpdateColumnName(String updateColumnName) {
-        this.updateColumnName = updateColumnName;
+        this.updateColumnName = updateColumnName.toLowerCase();
     }
-
+    
+    /**
+     * 
+     * @return 
+     */
     public String getUpdateColumnValue() {
         return updateColumnValue;
     }
 
+    /**
+     * 
+     * @param updateColumnValue 
+     */
     public void setUpdateColumnValue(String updateColumnValue) {
         this.updateColumnValue = updateColumnValue;
     }
-
+    
+    /**
+     * 
+     * @return 
+     */
     public List getValueList() {
         return valueList;
     }
 
+    /**
+     * 
+     * @param valueList 
+     */
     public void setValueList(List valueList) {
         this.valueList = valueList;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public List getSelectedColumns() {
         return selectedColumns;
     }
 
+    /**
+     * 
+     * @param selectedColumns 
+     */
     public void setSelectedColumns(List selectedColumns) {
         this.selectedColumns = selectedColumns;
     }

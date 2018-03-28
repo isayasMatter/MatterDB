@@ -6,10 +6,10 @@ import matterdb.parser.SqlParser;
 /**
  * University of Nevada Reno
  * Department of Computer Science and Engineering
- * CS657 Programming Assignment 1
+ * CS657 Programming Assignment
  * Spring 2018
  * @author Isayas Adhanom
- * @version 1.0 02/22/2018
+ * @version 1.0 03/27/2018
  */
 public class DMatter {
 
@@ -22,10 +22,8 @@ public class DMatter {
          * all our tables, columns and rows. All operations will be done on this engine object.
          */
         Engine currentEngine = new Engine();
-        
-        //This object will hold the command that we receive from the parser.
-        Command cmd;  
-        
+         
+        boolean keepGoing = true;
         /**
          * We check if the database engine can be started first, before starting any operations. 
          * If the engine can not start we explain the error to the user and exit gracefully.
@@ -39,13 +37,14 @@ public class DMatter {
                      * to do this until we encounter the exit command.
                      */
                     SqlParser parser = new SqlParser(System.in); 
-                    cmd = parser.Start(System.out);                    
-                    if ("EXIT".equals(cmd.getCommandType())) {
+                    keepGoing = parser.Start(System.out, currentEngine);                    
+                    
+                    if (!keepGoing) {
                         break;
                     }
                     //System.out.println(cmd);
                     //Pass the command object from our parser to our engine's commandProcessor method.
-                    currentEngine.commandProcessor(cmd);                               
+//                    currentEngine.commandProcessor(cmd);                               
                     
                     /** Catch all exceptions here, inform the user about the error and continue accepting input.
                      * Most exceptions here will ParseExceptions, which means they are syntax errors.

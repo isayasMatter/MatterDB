@@ -1,18 +1,27 @@
 /*
- * This file was prepared as part of the CS657 HW1 assignment  at University of Nevada, Reno byIsayas Adhanom.
+ * This file was prepared as part of the CS657 HW assignment  at University of Nevada, Reno by Isayas Adhanom.
  * Use it at your own risk.
  * Spring 2018.
  */
 package matterdb;
 import java.io.Serializable;
 import java.util.*;
+
 /**
- *
- * @author user
+ * University of Nevada Reno
+ * Department of Computer Science and Engineering
+ * CS657 Programming Assignment
+ * Spring 2018
+ * @author Isayas Adhanom
+ * @version 1.0 03/27/2018
  */
 public class Tuple implements Serializable{
     LinkedHashMap cells = new LinkedHashMap();
     
+    /**
+     * Constructor
+     * @param columns 
+     */
     public Tuple(LinkedHashMap<String, String> columns){
         this.cells = columns;
 //        Set<String> columnNames = columns.keySet();
@@ -22,11 +31,21 @@ public class Tuple implements Serializable{
 //        }
     }
     
+    /**
+     * Add a cell to the tuple.
+     * @param columnName
+     * @param cellValue 
+     */
     public void addCell(String columnName, String cellValue){
         Cell newCell = new Cell(columnName, cellValue);
         this.cells.put(columnName,newCell);
     }
 
+    /**
+     * Formats a tuple as a string.
+     * @param selectedColumns
+     * @return 
+     */
     public String printTuple(List<String> selectedColumns){
         String tupleString = "";
         
