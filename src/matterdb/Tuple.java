@@ -31,6 +31,10 @@ public class Tuple implements Serializable{
 //        }
     }
     
+    public Tuple(){
+        this.cells = new LinkedHashMap();
+    }
+    
     /**
      * Add a cell to the tuple.
      * @param columnName
@@ -61,7 +65,7 @@ public class Tuple implements Serializable{
             tupleString += (this.cells.get(columnName) + "|");
         }
         
-        tupleString = tupleString.substring(0,tupleString.length()-2);
+        tupleString = tupleString.substring(0,tupleString.length()-1);
         return tupleString;
     }    
 }

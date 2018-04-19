@@ -49,29 +49,33 @@ public interface SqlParserConstants {
   /** RegularExpression Id. */
   int DELETE = 24;
   /** RegularExpression Id. */
-  int INT = 25;
+  int ON = 25;
   /** RegularExpression Id. */
-  int FLOAT = 26;
+  int JOIN = 26;
   /** RegularExpression Id. */
-  int CHAR = 27;
+  int INT = 27;
   /** RegularExpression Id. */
-  int VARCHAR = 28;
+  int FLOAT = 28;
   /** RegularExpression Id. */
-  int SEMICOLON = 29;
+  int CHAR = 29;
   /** RegularExpression Id. */
-  int QUOTE = 30;
+  int VARCHAR = 30;
   /** RegularExpression Id. */
-  int DOT = 31;
+  int SEMICOLON = 31;
   /** RegularExpression Id. */
-  int COMMA = 32;
+  int QUOTE = 32;
   /** RegularExpression Id. */
-  int OPENBRACKET = 33;
+  int DOT = 33;
   /** RegularExpression Id. */
-  int CLOSEBRACKET = 34;
+  int COMMA = 34;
   /** RegularExpression Id. */
-  int NAME = 35;
+  int OPENBRACKET = 35;
   /** RegularExpression Id. */
-  int CONDITIONS = 36;
+  int CLOSEBRACKET = 36;
+  /** RegularExpression Id. */
+  int NAME = 37;
+  /** RegularExpression Id. */
+  int CONDITIONS = 38;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -103,6 +107,8 @@ public interface SqlParserConstants {
     "\"UPDATE\"",
     "\"SET\"",
     "\"DELETE\"",
+    "\"ON\"",
+    "<JOIN>",
     "\"int\"",
     "\"float\"",
     "\"char\"",

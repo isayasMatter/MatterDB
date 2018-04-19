@@ -12,6 +12,10 @@ import java.util.List;
 public class Command {    
     private String commandType;
     private String objectName;
+    private String objectName2 = null;
+    private String objectCode = null;
+    private String objectCode2 = null;
+    private String joinType = null;
     private List columnList;
     private Condition condition;
     private String updateColumnName;
@@ -187,13 +191,43 @@ public class Command {
     public void setSelectedColumns(List selectedColumns) {
         this.selectedColumns = selectedColumns;
     }
-    
-    
+
+    public String getObjectName2() {
+        return objectName2.toLowerCase();
+    }
+
+    public void setObjectName2(String objectName2) {
+        this.objectName2 = objectName2.toLowerCase();
+    }
+
+    public String getObjectCode() {
+        return objectCode;
+    }
+
+    public void setObjectCode(String obejctCode) {
+        this.objectCode = obejctCode;
+    }
+
+    public String getObjectCode2() {
+        return objectCode2;
+    }
+
+    public void setObjectCode2(String objectCode2) {
+        this.objectCode2 = objectCode2;
+    }
+
+    public String getJoinType() {
+        return joinType;
+    }
+
+    public void setJoinType(String joinType) {
+        this.joinType = joinType;
+    }
+
     @Override
     public String toString() {
-        return "Command{" + "commandType=" + commandType + ", objectName=" + objectName + ", condition=" + condition + ", updateColumnName=" + updateColumnName + ", updateColumnValue=" + updateColumnValue + '}';
+        return "Command{" + "commandType=" + commandType + ", objectName=" + objectName + ", objectName2=" + objectName2 + ", objectCode=" + objectCode + ", objectCode2=" + objectCode2 + ", joinType=" + joinType + ", condition=" + condition + ", valueList=" + valueList + '}';
     }
-    
     
     
 }

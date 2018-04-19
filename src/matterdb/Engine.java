@@ -117,11 +117,15 @@ public class Engine implements Serializable{
     }
     
     /**
-     * Displays data and structure of a table in the current database.
+     * Displays data and structure of a table (or multiple tables in case of a join operation) in the current database.
      * @param cmd the command object returned from the parser.
      */
     public void selectTable(Command cmd){
-        currentDb.selectTable(cmd.getObjectName(), cmd.getSelectedColumns(), cmd.getCondition());
+        if (cmd.getObjectName2() == null){
+            currentDb.selectTable(cmd);
+        } else {
+            currentDb.selectJoinTables(cmd);
+        }
     }
     
     /**

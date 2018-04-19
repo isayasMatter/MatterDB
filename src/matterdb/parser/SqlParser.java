@@ -194,13 +194,14 @@
   }
 
   final public Command SelectQuery() throws ParseException {
-                String tableName;
+                String tableName, table1Code, table2Name, table2Code, typeOfJoin;
 
-                Token t;
+                Token t, t1, t1_code, t2, t2_code;
                 Token columnToken;
                 Token conditionColumnName;
                 Token condition;
                 Token conditionValue;
+                Token joinType;
                 Condition cnd = new Condition();
 
                 Command newCmd = new Command("SELECT");
@@ -226,38 +227,90 @@
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case WHERE:
+      case NAME:
         ;
         break;
       default:
         jj_la1[5] = jj_gen;
         break label_3;
       }
-      jj_consume_token(WHERE);
-      conditionColumnName = jj_consume_token(NAME);
-      condition = jj_consume_token(CONDITIONS);
+      t1_code = jj_consume_token(NAME);
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case QUOTE:
+        case JOIN:
           ;
           break;
         default:
           jj_la1[6] = jj_gen;
           break label_4;
         }
-        jj_consume_token(QUOTE);
+        joinType = jj_consume_token(JOIN);
+                                                                    typeOfJoin = joinType.image; newCmd.setJoinType(typeOfJoin);
       }
-      conditionValue = jj_consume_token(NAME);
       label_5:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+          ;
+          break;
+        default:
+          jj_la1[7] = jj_gen;
+          break label_5;
+        }
+        jj_consume_token(COMMA);
+      }
+      t2 = jj_consume_token(NAME);
+      t2_code = jj_consume_token(NAME);
+                                                                                                                                                                           table1Code = t1_code.image; table2Name = t2.image; table2Code = t2_code.image; newCmd.setObjectName2(table2Name); newCmd.setObjectCode(table1Code); newCmd.setObjectCode2(table2Code);
+    }
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case WHERE:
+      case ON:
+        ;
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        break label_6;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ON:
+        jj_consume_token(ON);
+        break;
+      case WHERE:
+        jj_consume_token(WHERE);
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      conditionColumnName = jj_consume_token(NAME);
+      condition = jj_consume_token(CONDITIONS);
+      label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case QUOTE:
           ;
           break;
         default:
-          jj_la1[7] = jj_gen;
-          break label_5;
+          jj_la1[10] = jj_gen;
+          break label_7;
+        }
+        jj_consume_token(QUOTE);
+      }
+      conditionValue = jj_consume_token(NAME);
+      label_8:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case QUOTE:
+          ;
+          break;
+        default:
+          jj_la1[11] = jj_gen;
+          break label_8;
         }
         jj_consume_token(QUOTE);
       }
@@ -280,15 +333,15 @@
     jj_consume_token(OPENBRACKET);
     col = TableFieldDefinition();
                                                       columns.add(col);
-    label_6:
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[8] = jj_gen;
-        break label_6;
+        jj_la1[12] = jj_gen;
+        break label_9;
       }
       jj_consume_token(COMMA);
       col = TableFieldDefinition();
@@ -320,7 +373,7 @@
       cSize = CheckSize();
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[13] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -354,65 +407,65 @@
     tableName = jj_consume_token(NAME);
     jj_consume_token(VALUES);
     jj_consume_token(OPENBRACKET);
-    label_7:
+    label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case QUOTE:
         ;
         break;
       default:
-        jj_la1[10] = jj_gen;
-        break label_7;
+        jj_la1[14] = jj_gen;
+        break label_10;
       }
       jj_consume_token(QUOTE);
     }
     value = jj_consume_token(NAME);
-    label_8:
+    label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case QUOTE:
         ;
         break;
       default:
-        jj_la1[11] = jj_gen;
-        break label_8;
+        jj_la1[15] = jj_gen;
+        break label_11;
       }
       jj_consume_token(QUOTE);
     }
                                                       values.add(value.image);
-    label_9:
+    label_12:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[12] = jj_gen;
-        break label_9;
+        jj_la1[16] = jj_gen;
+        break label_12;
       }
       jj_consume_token(COMMA);
-      label_10:
+      label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case QUOTE:
           ;
           break;
         default:
-          jj_la1[13] = jj_gen;
-          break label_10;
+          jj_la1[17] = jj_gen;
+          break label_13;
         }
         jj_consume_token(QUOTE);
       }
       value = jj_consume_token(NAME);
-      label_11:
+      label_14:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case QUOTE:
           ;
           break;
         default:
-          jj_la1[14] = jj_gen;
-          break label_11;
+          jj_la1[18] = jj_gen;
+          break label_14;
         }
         jj_consume_token(QUOTE);
       }
@@ -445,47 +498,6 @@
     jj_consume_token(SET);
     updatedColumnName = jj_consume_token(NAME);
     jj_consume_token(CONDITIONS);
-    label_12:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case QUOTE:
-        ;
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        break label_12;
-      }
-      jj_consume_token(QUOTE);
-    }
-    columnValue = jj_consume_token(NAME);
-    label_13:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case QUOTE:
-        ;
-        break;
-      default:
-        jj_la1[16] = jj_gen;
-        break label_13;
-      }
-      jj_consume_token(QUOTE);
-    }
-    jj_consume_token(WHERE);
-    conditionColumnName = jj_consume_token(NAME);
-    condition = jj_consume_token(CONDITIONS);
-    label_14:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case QUOTE:
-        ;
-        break;
-      default:
-        jj_la1[17] = jj_gen;
-        break label_14;
-      }
-      jj_consume_token(QUOTE);
-    }
-    conditionValue = jj_consume_token(NAME);
     label_15:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -493,8 +505,49 @@
         ;
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[19] = jj_gen;
         break label_15;
+      }
+      jj_consume_token(QUOTE);
+    }
+    columnValue = jj_consume_token(NAME);
+    label_16:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case QUOTE:
+        ;
+        break;
+      default:
+        jj_la1[20] = jj_gen;
+        break label_16;
+      }
+      jj_consume_token(QUOTE);
+    }
+    jj_consume_token(WHERE);
+    conditionColumnName = jj_consume_token(NAME);
+    condition = jj_consume_token(CONDITIONS);
+    label_17:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case QUOTE:
+        ;
+        break;
+      default:
+        jj_la1[21] = jj_gen;
+        break label_17;
+      }
+      jj_consume_token(QUOTE);
+    }
+    conditionValue = jj_consume_token(NAME);
+    label_18:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case QUOTE:
+        ;
+        break;
+      default:
+        jj_la1[22] = jj_gen;
+        break label_18;
       }
       jj_consume_token(QUOTE);
     }
@@ -528,28 +581,28 @@
     jj_consume_token(WHERE);
     conditionColumnName = jj_consume_token(NAME);
     condition = jj_consume_token(CONDITIONS);
-    label_16:
+    label_19:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case QUOTE:
         ;
         break;
       default:
-        jj_la1[19] = jj_gen;
-        break label_16;
+        jj_la1[23] = jj_gen;
+        break label_19;
       }
       jj_consume_token(QUOTE);
     }
     conditionValue = jj_consume_token(NAME);
-    label_17:
+    label_20:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case QUOTE:
         ;
         break;
       default:
-        jj_la1[20] = jj_gen;
-        break label_17;
+        jj_la1[24] = jj_gen;
+        break label_20;
       }
       jj_consume_token(QUOTE);
     }
@@ -601,7 +654,7 @@
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[21];
+  final private int[] jj_la1 = new int[25];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -609,10 +662,10 @@
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x14d6880,0x14d6880,0x800,0x1496080,0x0,0x200,0x40000000,0x40000000,0x0,0x1e000000,0x40000000,0x40000000,0x0,0x40000000,0x40000000,0x40000000,0x40000000,0x40000000,0x40000000,0x40000000,0x40000000,};
+      jj_la1_0 = new int[] {0x14d6880,0x14d6880,0x800,0x1496080,0x0,0x0,0x4000000,0x0,0x2000200,0x2000200,0x0,0x0,0x0,0x78000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x4,0x20,0x0,0x4,0x0,0x0,0x1,0x1,0x4,0x0,0x1,0x1,0x4,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
@@ -629,7 +682,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -644,7 +697,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -655,7 +708,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -666,7 +719,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -676,7 +729,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -686,7 +739,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 21; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -798,12 +851,12 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[37];
+    boolean[] la1tokens = new boolean[39];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 21; i++) {
+    for (int i = 0; i < 25; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -815,7 +868,7 @@
         }
       }
     }
-    for (int i = 0; i < 37; i++) {
+    for (int i = 0; i < 39; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

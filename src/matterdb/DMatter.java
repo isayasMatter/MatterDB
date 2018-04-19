@@ -52,6 +52,7 @@ public class DMatter {
                     
                     } catch(Exception e){
                         System.out.println("There was an error: " + e );
+                        e.printStackTrace();
                     }
             } 
         }  

@@ -38,7 +38,9 @@ public class Database implements Serializable{
             columns.forEach((col) -> newTable.addColumn(col));            
             
             tables.put(name, newTable);
-            System.out.println("Table " + name + " created.");
+            if(!name.equals("temp_54321")){
+                System.out.println("Table " + name + " created.");
+            }
             return true;
         }else {
             System.out.println("!Failed to create table " + name + " because it already exists.");
@@ -72,9 +74,11 @@ public class Database implements Serializable{
     public boolean dropTable(String name){
         if (tableExists(name)) {
             this.tables.remove(name);
-            System.out.println("Table " + name + " deleted.");
+            if(!name.equals("temp_54321")){
+                System.out.println("Table " + name + " deleted.");
+            }
             return true;
-        }else{            
+        }else {            
             System.out.println("!Failed to delete table " + name + " because it does not exist.");
             return false;
         }
@@ -86,15 +90,70 @@ public class Database implements Serializable{
      * @param selectedColumns
      * @param condition 
      */
-    public void selectTable(String name, List selectedColumns, Condition condition){
+    public void selectTable(Command cmd){
+        
         Table table;
-        if(tableExists(name)){
-            table = (Table) this.tables.get(name);
-            System.out.println(table.getColumns(selectedColumns));
-            table.printTuples(selectedColumns, condition);
+        if(tableExists(cmd.getObjectName())){
+            table = (Table) this.tables.get(cmd.getObjectName());
+            System.out.println(table.getColumns(cmd.getSelectedColumns()));
+            table.printTuples(cmd.getSelectedColumns(), cmd.getCondition());
         }else{
-            System.out.println("!Failed to query table " + name + " because it does not exist");
+            System.out.println("!Failed to query table " + cmd.getObjectName() + " because it does not exist");
         }
+    }
+    
+    /**
+     * A method that uses nested loop join to join two tables.
+     * @param cmd 
+     */
+    public void selectJoinTables(Command cmd){
+        
+        Table table1 = this.tables.get(cmd.getObjectName());
+        Table table2 = this.tables.get(cmd.getObjectName2());
+        
+        LinkedHashMap newMap = new LinkedHashMap();
+        
+        newMap.putAll(table1.getColumnDefinitions());
+        newMap.putAll(table2.getColumnDefinitions());
+        
+        List<Column> newList = new ArrayList<>(newMap.values());
+        
+        this.createTable("temp_54321", newList);
+        cmd.setObjectName("temp_54321");
+        
+        String column1 = cmd.getCondition().columnName;
+        String column2 = cmd.getCondition().conditionValue;
+        
+        column1 = column1.substring(column1.lastIndexOf(".") + 1);
+        column2 = column2.substring(column2.lastIndexOf(".") + 1);
+        
+        boolean flag = false;
+        for(int key1: table1.getTuples().keySet()){
+            Tuple tuple1 = table1.getTuples().get(key1);
+            for (int key2: table2.getTuples().keySet()){
+                Tuple tuple2 = table2.getTuples().get(key2);
+                if(tuple1.cells.get(column1).equals(tuple2.cells.get(column2))){
+                    Tuple newTuple = new Tuple();
+                    newTuple.cells.putAll(tuple1.cells);
+                    newTuple.cells.putAll(tuple2.cells);               
+                    this.tables.get("temp_54321").insertTuple(newTuple);
+                    flag = true;
+                }                
+            }
+            if(cmd.getJoinType()!= null && cmd.getJoinType().equals("left outer join")){
+                if(flag==false){
+                    Tuple newTuple = new Tuple();
+                    newTuple.cells.putAll(tuple1.cells);
+                    this.tables.get("temp_54321").insertTuple(newTuple);
+                }
+            }
+            flag = false;
+        }
+        
+        cmd.setCondition(null);
+        this.selectTable(cmd);
+        this.dropTable("temp_54321");
+    
     }
     
     /**

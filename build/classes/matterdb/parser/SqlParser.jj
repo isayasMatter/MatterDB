@@ -40,7 +40,27 @@ PARSER_END(SqlParser)
         SKIP: {" "|"\n"|"\r"|"\r\n"|"\t"}
 	/* TOKEN: {<EOL: "\n"|"\r"|"\r\n">} */
       
-	TOKEN : {< SELECT: "SELECT" > | < FROM : "FROM" > | < WHERE : "WHERE" > | < AND : "AND" > | <CREATE: "CREATE"> | <DATABASE: "DATABASE"> | <DROP: "DROP"> | <USE: "USE"> | <TABLE: "TABLE"> | <ALTER: "ALTER"> | <ADD: "ADD"> | <EXIT: ".EXIT"> | <INSERT: "INSERT"> | <INTO: "INTO"> | <VALUES: "VALUES"> | <UPDATE: "UPDATE"> | <SET: "SET"> | <DELETE: "DELETE">} 
+	TOKEN : {   < SELECT: "SELECT" > 
+                    | < FROM : "FROM" > 
+                    | < WHERE : "WHERE" > 
+                    | < AND : "AND" > 
+                    | <CREATE: "CREATE"> 
+                    | <DATABASE: "DATABASE"> 
+                    | <DROP: "DROP"> 
+                    | <USE: "USE"> 
+                    | <TABLE: "TABLE"> 
+                    | <ALTER: "ALTER"> 
+                    | <ADD: "ADD"> 
+                    | <EXIT: ".EXIT"> 
+                    | <INSERT: "INSERT"> 
+                    | <INTO: "INTO"> 
+                    | <VALUES: "VALUES"> 
+                    | <UPDATE: "UPDATE"> 
+                    | <SET: "SET"> 
+                    | <DELETE: "DELETE">              
+                    | <ON: "ON">
+                }
+        TOKEN: {<JOIN: "INNER JOIN" | "LEFT OUTER JOIN" | "RIGHT OUTER JOIN">}
 	TOKEN: {<INT: "int"> | <FLOAT: "float"> | <CHAR: "char"> | <VARCHAR: "varchar"> }
 	
         TOKEN : {<SEMICOLON: ";"> | <QUOTE: "'"|"\""> | <DOT: "."> | <COMMA: ","> | <OPENBRACKET: "("> | <CLOSEBRACKET: ")"> }
@@ -195,13 +215,14 @@ PARSER_END(SqlParser)
 
 	Command SelectQuery() :
 	{
-		String tableName;
+		String tableName, table1Code, table2Name, table2Code, typeOfJoin;
 
-		Token t;
+		Token t, t1, t1_code, t2, t2_code;
                 Token columnToken;
                 Token conditionColumnName;
                 Token condition;
                 Token conditionValue;
+                Token joinType;
                 Condition cnd = new Condition();
 
 		Command newCmd = new Command("SELECT");
@@ -211,8 +232,8 @@ PARSER_END(SqlParser)
 	{
 		columnToken = <NAME> {columns.add(columnToken.image);}
                 (<COMMA> columnToken = <NAME> {columns.add(columnToken.image);})*
-                <FROM> t=<NAME> 
-                (<WHERE> conditionColumnName = <NAME> condition = <CONDITIONS> (<QUOTE>)* conditionValue = <NAME> (<QUOTE>)* 
+                <FROM> t=<NAME> (t1_code=<NAME> (joinType = <JOIN> {typeOfJoin = joinType.image; newCmd.setJoinType(typeOfJoin);})* (<COMMA>)* t2 = <NAME> t2_code=<NAME> {table1Code = t1_code.image; table2Name = t2.image; table2Code = t2_code.image; newCmd.setObjectName2(table2Name); newCmd.setObjectCode(table1Code); newCmd.setObjectCode2(table2Code);})*   
+                ((<ON> | <WHERE>) conditionColumnName = <NAME> condition = <CONDITIONS> (<QUOTE>)* conditionValue = <NAME> (<QUOTE>)* 
                 {
                         cnd.columnName = conditionColumnName.image;
                         cnd.conditionType = condition.image;

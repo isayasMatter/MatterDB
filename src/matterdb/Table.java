@@ -93,6 +93,9 @@ public class Table implements Serializable{
         return (allColumns);
     }
     
+    public LinkedHashMap getColumnDefinitions(){
+        return this.columns;
+    }
     
     /**
      * Inserts a tuple.
@@ -117,6 +120,11 @@ public class Table implements Serializable{
         
         System.out.println("1 new record inserted.");
         return true;
+    }
+    
+    public void insertTuple(Tuple newTuple){
+        int col_id = id.incrementAndGet();
+        this.tuples.put(col_id, newTuple);
     }
     
     /**
@@ -231,4 +239,10 @@ public class Table implements Serializable{
         }
         return filteredTuples;
     }
+
+    public LinkedHashMap<Integer, Tuple> getTuples() {
+        return tuples;
+    }
+    
+    
 }
