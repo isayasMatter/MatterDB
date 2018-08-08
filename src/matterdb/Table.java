@@ -16,6 +16,7 @@ public class Table implements Serializable{
     private String name;     
     private LinkedHashMap columns;
     private LinkedHashMap<Integer, Tuple> tuples;
+    private boolean lock;
     
     /**
      * Constructor
@@ -25,6 +26,7 @@ public class Table implements Serializable{
         this.name = name;
         this.columns = new LinkedHashMap();
         this.tuples = new LinkedHashMap();
+        this.lock = false;
     }
     
     /**
@@ -96,6 +98,15 @@ public class Table implements Serializable{
     public LinkedHashMap getColumnDefinitions(){
         return this.columns;
     }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
+    }
+    
     
     /**
      * Inserts a tuple.

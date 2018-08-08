@@ -21,6 +21,8 @@
       case INSERT:
       case UPDATE:
       case DELETE:
+      case TRANSACTION:
+      case COMMIT:
         ;
         break;
       default:
@@ -36,6 +38,8 @@
       case INSERT:
       case UPDATE:
       case DELETE:
+      case TRANSACTION:
+      case COMMIT:
         cmd = Query();
         jj_consume_token(SEMICOLON);
                                                    currentEngine.commandProcessor(cmd);
@@ -105,6 +109,14 @@
           case INSERT:
             jj_consume_token(INSERT);
             cmd = InsertQuery();
+            break;
+          case TRANSACTION:
+            jj_consume_token(TRANSACTION);
+            cmd = Transaction();
+            break;
+          case COMMIT:
+            jj_consume_token(COMMIT);
+            cmd = Commit();
             break;
           default:
             jj_la1[3] = jj_gen;
@@ -397,6 +409,18 @@
     throw new Error("Missing return statement in function");
   }
 
+  final public Command Transaction() throws ParseException {
+            Command newCmd = new Command("BEGIN_TRANSACTION");
+             {if (true) return newCmd;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Command Commit() throws ParseException {
+            Command newCmd = new Command("COMMIT");
+             {if (true) return newCmd;}
+    throw new Error("Missing return statement in function");
+  }
+
   final public Command InsertQuery() throws ParseException {
             String strTableName;;
             Command cmd = new Command("INSERT");;
@@ -662,10 +686,10 @@
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x14d6880,0x14d6880,0x800,0x1496080,0x0,0x0,0x4000000,0x0,0x2000200,0x2000200,0x0,0x0,0x0,0x78000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0xd4d6880,0xd4d6880,0x800,0xd496080,0x0,0x0,0x10000000,0x0,0x2000200,0x2000200,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x4,0x20,0x0,0x4,0x0,0x0,0x1,0x1,0x4,0x0,0x1,0x1,0x4,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x10,0x80,0x0,0x10,0x0,0x0,0x4,0x4,0x10,0x1,0x4,0x4,0x10,0x4,0x4,0x4,0x4,0x4,0x4,0x4,0x4,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
@@ -851,7 +875,7 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[39];
+    boolean[] la1tokens = new boolean[41];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -868,7 +892,7 @@
         }
       }
     }
-    for (int i = 0; i < 39; i++) {
+    for (int i = 0; i < 41; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

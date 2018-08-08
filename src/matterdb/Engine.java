@@ -14,12 +14,16 @@ public class Engine implements Serializable{
     private Database currentDb;
     private static HashMap<String, Database> databases;
     private static final String FILE_NAME = "dbmatter_file.dbm"; 
+    public static boolean transaction;
+    public static boolean transactionError;
     
     /**
      * Constructor
      */
     public Engine(){
-        databases = new HashMap<String, Database>();        
+        databases = new HashMap<String, Database>();
+        transaction = false;  
+        transactionError = false;
     }
    
     /**
@@ -166,17 +170,20 @@ public class Engine implements Serializable{
      */
     public boolean commandProcessor(Command cmd){
         String cmdType = cmd.getCommandType();
-        String objName = cmd.getObjectName();
+        String objName;
         List columns = cmd.getColumnList();
         
         switch(cmdType){
             case "CREATE_DATABASE":
+                objName = cmd.getObjectName();
                 createDb(objName);
                 break;
             case "USE_DATABASE":
+                objName = cmd.getObjectName();
                 useDb(objName);                
                 break;
             case "DROP_DATABASE":
+                objName = cmd.getObjectName();
                 dropDb(objName);
                 break;
             case "SHOW_DATABASES":
@@ -191,6 +198,7 @@ public class Engine implements Serializable{
                 break;
             case "DROP_TABLE":
                 if (currentDb != null){
+                    objName = cmd.getObjectName();
                     dropTable(objName);
                 } else{
                     System.out.println("You are not using any database. Please select a database to use first.");
@@ -231,6 +239,13 @@ public class Engine implements Serializable{
                     System.out.println("You are not using any database. Please select a database to use first.");
                 }
                 break;
+            case "BEGIN_TRANSACTION":                
+                System.out.println("Transaction starts.");
+                beginTransaction();                
+                break;
+            case "COMMIT":                
+                commit();
+                break;
             default:
                 System.out.println("Command not recognized. Please try again.");
                 break;
@@ -238,6 +253,24 @@ public class Engine implements Serializable{
         return true;
     }
     
+    public void beginTransaction(){
+        transaction = true;
+    }
+    
+    public void commit(){
+       if(Engine.transaction){ 
+           if(!Engine.transactionError){          
+                currentDb.unlockTables();           
+                saveDatabases();
+                System.out.println("Transaction committed.");
+           }else{
+               System.out.println("Transaction Abort.");               
+           }
+       }else {
+           System.out.println("No transaction to commit.");
+       }
+       Engine.transaction = false;
+    }
     /**
      * Starts the database engine by loading or creating the main databases file.
      * @return 

@@ -193,7 +193,7 @@ public class Command {
     }
 
     public String getObjectName2() {
-        return objectName2.toLowerCase();
+        return (objectName2 == null?null:objectName2.toLowerCase());
     }
 
     public void setObjectName2(String objectName2) {

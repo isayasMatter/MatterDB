@@ -59,6 +59,8 @@ PARSER_END(SqlParser)
                     | <SET: "SET"> 
                     | <DELETE: "DELETE">              
                     | <ON: "ON">
+                    | <TRANSACTION: "BEGIN TRANSACTION">
+                    | <COMMIT: "COMMIT">
                 }
         TOKEN: {<JOIN: "INNER JOIN" | "LEFT OUTER JOIN" | "RIGHT OUTER JOIN">}
 	TOKEN: {<INT: "int"> | <FLOAT: "float"> | <CHAR: "char"> | <VARCHAR: "varchar"> }
@@ -111,6 +113,10 @@ PARSER_END(SqlParser)
                 <DELETE>cmd=DeleteQuery()
                 |
                 <INSERT>cmd=InsertQuery()
+                |
+                <TRANSACTION>cmd=Transaction()
+                |
+                <COMMIT>cmd=Commit()
 		)
 		{
 			return cmd;
@@ -306,6 +312,22 @@ PARSER_END(SqlParser)
 	{
 		{return newCmd;}
 	}
+
+        Command Transaction():
+        {
+            Command newCmd = new Command("BEGIN_TRANSACTION");
+        }
+        {
+            {return newCmd;}
+        }
+
+        Command Commit():
+        {
+            Command newCmd = new Command("COMMIT");
+        }
+        {
+            {return newCmd;}
+        }
 
         Command InsertQuery () :
         {

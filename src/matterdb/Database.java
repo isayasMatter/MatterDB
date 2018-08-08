@@ -13,12 +13,13 @@ import java.io.Serializable;
 public class Database implements Serializable{
     private String name;
     private HashMap<String, Table> tables;
-    
+    private List<String> lockedTables;
     /**
      * Constructor
      * @param name 
      */
     public Database(String name){
+        this.lockedTables = new ArrayList<>();
         this.name = name;
         tables = new HashMap();
     }
@@ -59,6 +60,10 @@ public class Database implements Serializable{
         if (tableExists(name)){
             this.tables.get(name).addColumn(column);           
             System.out.println("Table " + name + " modified.");
+            if(Engine.transaction ){
+                this.tables.get(name).setLock(true);
+                lockedTables.add(this.tables.get(name).getName());
+            }
             return true;
         }else{
             System.out.println("!Failed to alter table " + name + " because it does not exist.");
@@ -166,6 +171,10 @@ public class Database implements Serializable{
         if(tableExists(name)){
             table = (Table) this.tables.get(name);
             table.insertTuple(values);
+            if(Engine.transaction ){
+                table.setLock(true);
+                lockedTables.add(table.getName());
+            }
         } else {
             System.out.println("!Failed to insert to table " + name + " because it does not exist");
         }
@@ -190,9 +199,29 @@ public class Database implements Serializable{
         if(tableExists(name)){
             table = (Table) this.tables.get(name);
             table.deleteTuples(condition);
+            if(Engine.transaction ){
+                table.setLock(true);
+                lockedTables.add(table.getName());
+            }
         } else {
             System.out.println("!Failed to delete from table " + name + " because it does not exist");
         }
+    }
+
+    public List getLockedTables() {
+        return lockedTables;
+    }
+
+    public void setLockedTables(List lockedTables) {
+        this.lockedTables = lockedTables;
+    }
+    
+    public void unlockTables(){
+        for(String tableName:lockedTables){
+            Table table = (Table) this.tables.get(tableName);
+            table.setLock(false);
+        }
+        lockedTables.clear();
     }
     
     /**
@@ -204,7 +233,16 @@ public class Database implements Serializable{
         Table table;
         if(tableExists(tableName)){
             table = (Table) this.tables.get(tableName);
-            table.updateTuples(cmd.getCondition(), cmd.getUpdateColumnName(), cmd.getUpdateColumnValue());
+            if (table.isLock()){
+                System.out.println("Error: Table Flights is locked!");
+                Engine.transactionError = true;
+            }else{
+                table.updateTuples(cmd.getCondition(), cmd.getUpdateColumnName(), cmd.getUpdateColumnValue());
+            }
+            if(Engine.transaction ){
+                table.setLock(true);
+                lockedTables.add(table.getName());
+            }
         } else {
             System.out.println("!Failed to update table " + tableName + " because it does not exist");
         }
